@@ -1,4 +1,4 @@
-#!/usr/local/bin/node --harmony_destructuring
+#!/usr/local/bin/node 
 var util = require('util');
 var fs = require('fs');
 var PEG = require("./grammar.js");

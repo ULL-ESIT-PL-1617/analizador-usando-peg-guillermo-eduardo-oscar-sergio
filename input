@@ -1,1 +1,4 @@
-// INSERTE CÓDIGO
+if a < 3 {
+b = 3;
+c = 8;
+};

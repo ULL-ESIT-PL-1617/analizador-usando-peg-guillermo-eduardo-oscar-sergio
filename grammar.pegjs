@@ -6,7 +6,14 @@
 }
 
 start =
-    s:(statement SEMICOLON)+ {return s;}
+    s:(statement SEMICOLON)+ {
+      let array = [];
+      var arrayLength = s.length;
+      for (var i = 0; i < arrayLength; i++) {
+          array.push(s[i][0]);
+      }
+      return array;
+    }
 
 statement =
     IF cond:condition LEFTKEY sent:start RIGHTKEY{
@@ -35,7 +42,7 @@ condition =
       return{
          kind: "Condition",
          right: rr,
-         comp: c,
+         comp: c[1],
          left: ll
       };
     }
@@ -59,10 +66,11 @@ function =
       };
     }
 
+
 expression =
     ter:term vec:(ADDOP term)*{
       if(vec.length == 0){
-         return term;
+         return ter;
       }
       else{
          let array = [];
