@@ -48,15 +48,15 @@ condition =
     }
 
 assignment =
-    idd:ID ASSIGN assi:assignment{
+    fun:function{return fun;}
+    /idd:ID ASSIGN assi:assignment{
       return{
          kind: "Assignment",
          id: idd,
          assignment: assi
       };
     }
-    / exp:expression{ return exp;}
-    / fun:function{ return fun;}
+    /exp:expression{ return exp;}
 
 function =
     FUNCTION LEFTPAR RIGHTPAR LEFTKEY sent:start RIGHTKEY{
@@ -75,7 +75,7 @@ expression =
       else{
          let array = [];
          vec.forEach(function(iter){
-            array.push({kind:iter[0], left: term, right: iter[1]});
+            array.push({kind:iter[0][1], left: ter, right: iter[1]});
          });
          return array;
       }
