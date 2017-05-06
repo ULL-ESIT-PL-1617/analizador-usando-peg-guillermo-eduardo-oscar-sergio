@@ -23,7 +23,7 @@ Diseñe un lenguaje de programación sencillo. Escriba un analizador sintáctico
 
 ### Gramática del lenguaje
 
-1. statements ---> (statement ";")+
+1. start ---> (statement ";")+
 2. statement ---> "if" condition "{" statements "}" |  "while" "(" condition ")" "{" statements "}" | "print" expression | assign
 3. condition ---> expression COMPARISON expression
 4. assign ---> ID "=" assign | expression | function

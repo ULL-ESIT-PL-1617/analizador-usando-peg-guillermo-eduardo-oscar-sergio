@@ -6,61 +6,66 @@
 }
 
 start =
-    a:comma {
-        return {symbolTable: symbolTable, result:a }
-    }
+    (statement SEMICOLON)+
 
-comma
-    = left:assign right:(COMMA last:assign)* {
-        let val;
-        right.forEach((x) => {
-            val = x[1];
-        });
-        return val;
-    }
+statement =
+    IF condition LEFTKEY start RIGHTKEY
+    / WHILE LEFTPAR condition RIGHTPAR LEFTKEY start RIGHTKEY
+    / PRINT expression
+    / assignment
 
-assign
-  = id:ID ASSIGN a:additive {
-         symbolTable[id] = a;
-         return a;
-      }
-  / additive
+condition =
+    expression COMPARISON expression
 
-additive
-  = left:multiplicative rest:(ADDOP multiplicative)* {
-       let sum = left;
-       rest.forEach( (x) => {
-         eval(`sum ${x[0]}= ${x[1]}`);
-       });
-       return sum;
-    }
-  / multiplicative
+assignment =
+    ID ASSIGN assignment
+    / expression
+    / function
 
-multiplicative
-  = left:primary rest:(MULOP primary)* {
-      return rest.reduce((prod, [op, num])=>{ return eval(prod+op+num); },left);
-    }
-  / primary
+function =
+    FUNCTION LEFTPAR RIGHTPAR LEFTKEY start RIGHTKEY
 
-primary
-  = integer
-  / id:ID  { return symbolTable[id]; }
-  / LEFTPAR assign:assign RIGHTPAR { return assign; }
+expression =
+    term (ADDOP term)*
 
-integer "integer"
-  = NUMBER
+term =
+    factor (MULOP factor)*
+
+factor =
+    NUMBER
+    / ID
+    / LEFTPAR expression RIGHTPAR
+
 
 _ = $[ \t\n\r]*
 
 ADDOP = PLUS / MINUS
 MULOP = MULT / DIV
-PLUS = _"+"_  { return '+'; }
-MINUS = _"-"_ { return '-'; }
-MULT = _"*"_  { return '*'; }
-DIV = _"/"_   { return '/'; }
+PLUS = _"+"_
+MINUS = _"-"_
+MULT = _"*"_
+DIV = _"/"_
+
+COMPARISON = EQUALS / BIGGEREQUAL / SMALLEREQUAL / BIGGER / SMALLER
+EQUALS = _"=="_
+BIGGEREQUAL = _">="_
+SMALLEREQUAL = _"<="_
+SMALLER = _"<"_
+BIGGER = _">"_
+
 LEFTPAR = _"("_
 RIGHTPAR = _")"_
+LEFTKEY = _"{"_
+RIGHTKEY = _"}"_
+
 NUMBER = _ digits:$[0-9]+ _ { return parseInt(digits, 10); }
-ID = _ id:$([a-z_]i$([a-z0-9_]i*)) _ { console.log(id); return id; }
-ASSIGN = _ '=' _
-COMMA = _ ','_
+ID = _ id:$([a-z_]i$([a-z0-9_]i*)) _ { return id; }
+
+ASSIGN = _'='_
+COMMA = _','_
+SEMICOLON = _";"_
+
+IF = _"if"_
+WHILE = _"while"_
+PRINT = _"print"_
+FUNCTION = _"function"_
