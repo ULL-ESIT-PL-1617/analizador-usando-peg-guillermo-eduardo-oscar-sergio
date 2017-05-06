@@ -6,35 +6,91 @@
 }
 
 start =
-    (statement SEMICOLON)+
+    s:(statement SEMICOLON)+ {return s;}
 
 statement =
-    IF condition LEFTKEY start RIGHTKEY
-    / WHILE LEFTPAR condition RIGHTPAR LEFTKEY start RIGHTKEY
-    / PRINT expression
-    / assignment
+    IF cond:condition LEFTKEY sent:start RIGHTKEY{
+      return{
+         kind: "IF",
+         condition: cond,
+         sentence: sent
+      };
+    }
+    / WHILE LEFTPAR cond:condition RIGHTPAR LEFTKEY sent:start RIGHTKEY{
+      return{
+         kind: "WHILE",
+         condition: cond,
+         sentence: sent
+      };
+    }
+    / PRINT exp:expression{
+      return exp;
+    }
+    / assig:assignment{
+      return assig;
+    }
 
 condition =
-    expression COMPARISON expression
+    rr:expression c:COMPARISON ll:expression{
+      return{
+         kind: "Condition",
+         right: rr,
+         comp: c,
+         left: ll
+      };
+    }
 
 assignment =
-    ID ASSIGN assignment
-    / expression
-    / function
+    idd:ID ASSIGN assi:assignment{
+      return{
+         kind: "Assignment",
+         id: idd,
+         assignment: assi
+      };
+    }
+    / exp:expression{ return exp;}
+    / fun:function{ return fun;}
 
 function =
-    FUNCTION LEFTPAR RIGHTPAR LEFTKEY start RIGHTKEY
+    FUNCTION LEFTPAR RIGHTPAR LEFTKEY sent:start RIGHTKEY{
+      return{
+         kind: "Function",
+         sentence: sent
+      };
+    }
 
 expression =
-    term (ADDOP term)*
+    ter:term vec:(ADDOP term)*{
+      if(vec.length == 0){
+         return term;
+      }
+      else{
+         let array = [];
+         vec.forEach(function(iter){
+            array.push({kind:iter[0], left: term, right: iter[1]});
+         });
+         return array;
+      }
+    }
 
 term =
-    factor (MULOP factor)*
+    fact:factor vec:(MULOP factor)*{
+      if(vec.length == 0){
+         return fact;
+      }
+      else{
+         let array = [];
+         vec.forEach(function(iter){
+            array.push({kind:iter[0], left: fact, right: iter[1]});
+         });
+         return array;
+      }
+    }
 
 factor =
-    NUMBER
-    / ID
-    / LEFTPAR expression RIGHTPAR
+    num:NUMBER {return num;}
+    / id:ID{ return id;}
+    / LEFTPAR exp:expression RIGHTPAR {return exp;}
 
 
 _ = $[ \t\n\r]*
