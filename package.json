@@ -1,0 +1,22 @@
+{
+  "name": "analizador-usando-peg-guillermo-eduardo-oscar-sergio",
+  "version": "1.0.0",
+  "description": "Analizador léxico para un lenguaje personalizado, realizado utilizando PEGjs.",
+  "main": "main.js",
+  "scripts": {
+    "test": "pegjs grammar.pegjs && node main.js 'a = 4*5'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ULL-ESIT-PL-1617/analizador-usando-peg-guillermo-eduardo-oscar-sergio.git"
+  },
+  "keywords": [
+    "PEGjs"
+  ],
+  "author": "Óscar Darias Plasencia, Sergio García de la Iglesia, Eduardo de la Paz González, Guillermo Esquivel González",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ULL-ESIT-PL-1617/analizador-usando-peg-guillermo-eduardo-oscar-sergio/issues"
+  },
+  "homepage": "https://github.com/ULL-ESIT-PL-1617/analizador-usando-peg-guillermo-eduardo-oscar-sergio#readme"
+}
