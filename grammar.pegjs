@@ -16,89 +16,91 @@ start =
     }
 
 statement =
-    IF cond:condition LEFTKEY sent:start RIGHTKEY{
-      return{
+    IF LEFTPAR cond:condition RIGHTPAR LEFTKEY sent:start RIGHTKEY {
+      return {
          kind: "IF",
          condition: cond,
          sentence: sent
       };
     }
-    / WHILE LEFTPAR cond:condition RIGHTPAR LEFTKEY sent:start RIGHTKEY{
-      return{
+    / WHILE LEFTPAR cond:condition RIGHTPAR LEFTKEY sent:start RIGHTKEY {
+      return {
          kind: "WHILE",
          condition: cond,
          sentence: sent
       };
     }
-    / PRINT exp:expression{
+    / PRINT exp:expression {
       return exp;
     }
-    / assig:assignment{
+    / assig:assignment {
       return assig;
     }
 
 condition =
-    rr:expression c:COMPARISON ll:expression{
-      return{
-         kind: "Condition",
-         right: rr,
-         comp: c[1],
-         left: ll
-      };
+    rr:expression c:COMPARISON ll:expression {
+        return {
+            kind: "CONDITION",
+            right: rr,
+            comp: c[1],
+            left: ll
+        };
     }
 
 assignment =
-    fun:function{return fun;}
-    /idd:ID ASSIGN assi:assignment{
-      return{
-         kind: "Assignment",
-         id: idd,
-         assignment: assi
-      };
+    fun:function { return fun; }
+    / idd:ID ASSIGN assi:assignment {
+        symbolTable[idd] = assi;
+        return {
+            kind: "ASSIGN",
+            id: idd,
+            assignment: assi
+        };
     }
-    /exp:expression{ return exp;}
+    / exp:expression { return exp; }
 
 function =
     FUNCTION LEFTPAR RIGHTPAR LEFTKEY sent:start RIGHTKEY{
-      return{
-         kind: "Function",
+      return {
+         kind: "FUNCTION",
          sentence: sent
       };
     }
 
 
 expression =
-    ter:term vec:(ADDOP term)*{
-      if(vec.length == 0){
+    ter:term vec:(ADDOP term)* {
+      if (vec.length == 0) {
          return ter;
-      }
-      else{
+      } else {
          let array = [];
-         vec.forEach(function(iter){
-            array.push({kind:iter[0][1], left: ter, right: iter[1]});
+         vec.forEach(function(iter) {
+            array.push({ kind:iter[0][1], left: ter, right: iter[1] });
          });
          return array;
       }
     }
 
 term =
-    fact:factor vec:(MULOP factor)*{
-      if(vec.length == 0){
+    fact:factor vec:(MULOP factor)* {
+      if (vec.length == 0) {
          return fact;
-      }
-      else{
+      } else {
          let array = [];
-         vec.forEach(function(iter){
-            array.push({kind:iter[0], left: fact, right: iter[1]});
+         vec.forEach(function(iter) {
+            array.push({ kind:iter[0][1], left: fact, right: iter[1] });
          });
          return array;
       }
     }
 
 factor =
-    num:NUMBER {return num;}
-    / id:ID{ return id;}
-    / LEFTPAR exp:expression RIGHTPAR {return exp;}
+    num:NUMBER { return num; }
+    / id:ID {
+        let value = symbolTable[id];
+        return value;
+    }
+    / LEFTPAR exp:expression RIGHTPAR { return exp; }
 
 
 _ = $[ \t\n\r]*
